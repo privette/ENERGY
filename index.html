@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Me vs. The Utility — A Household Energy Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --ink:#14181F; --paper:#FBFAF8; --panel:#FFFFFF; --muted:#6B7280; --line:#E8E6E0;
+  --you:#0E9F6E; --you-soft:#D7F2E6; --util:#DC2626; --util-soft:#FBE3E3; --amber:#D97706;
+  --now:#0891B2;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1040px;margin:0 auto;padding:28px 22px 60px}
+.mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
+h1,h2,h3,.disp{font-family:'Space Grotesk',sans-serif;letter-spacing:-0.01em}
+a{color:var(--now)}
+
+/* header */
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;border-bottom:2px solid var(--ink);padding-bottom:16px;margin-bottom:8px;flex-wrap:wrap}
+.brandline{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-size:30px;margin:6px 0 0;line-height:1.05;max-width:680px}
+.live{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);font-weight:500}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--now);box-shadow:0 0 0 0 rgba(8,145,178,.5);animation:pulse 2.2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(8,145,178,.5)}70%{box-shadow:0 0 0 7px rgba(8,145,178,0)}100%{box-shadow:0 0 0 0 rgba(8,145,178,0)}}
+@media (prefers-reduced-motion:reduce){.dot{animation:none}}
+
+/* hero scoreboard */
+.hero{display:grid;grid-template-columns:1.1fr 1fr 1.1fr;gap:0;margin:26px 0 8px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel)}
+.side{padding:22px 22px 20px}
+.side .cap{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700}
+.side .big{font-family:'IBM Plex Mono',monospace;font-size:34px;font-weight:600;line-height:1;margin:10px 0 4px;font-variant-numeric:tabular-nums}
+.side .sub{font-size:12px;color:var(--muted)}
+.you-side{background:linear-gradient(180deg,#F2FBF7,#fff)}
+.you-side .cap{color:var(--you)} .you-side .big{color:var(--you)}
+.util-side{background:linear-gradient(180deg,#FDF1F1,#fff)}
+.util-side .cap{color:var(--util)} .util-side .big{color:var(--util)}
+.net-side{background:var(--ink);color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.net-side .cap{color:#cbd5e1}
+.net-side .big{font-size:40px;color:#fff;margin:8px 0 2px}
+.net-side .sub{color:#9aa6b2}
+.vs{font-family:'Space Grotesk';font-weight:700;color:var(--muted);font-size:13px;text-align:center;margin:-2px 0 14px;letter-spacing:.1em}
+
+.note{font-size:13px;color:var(--muted);margin:4px 0 0}
+section{margin-top:46px}
+.eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--now);font-weight:700;margin-bottom:4px}
+h2{font-size:22px;margin:0 0 6px}
+.lead{color:#3a4250;font-size:15px;margin:0 0 16px;max-width:760px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 18px 14px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+canvas{max-height:340px!important}
+.cap-sm{font-size:12px;color:var(--muted);margin-top:10px}
+
+/* kpi row */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:15px}
+.kpi .l{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.kpi .v{font-family:'IBM Plex Mono',monospace;font-size:23px;font-weight:600;margin:7px 0 2px;font-variant-numeric:tabular-nums}
+.kpi .s{font-size:11.5px;color:var(--muted)}
+.kpi.you .v{color:var(--you)} .kpi.util .v{color:var(--util)}
+
+/* table */
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+th{text-align:right;font-family:'Space Grotesk';font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:9px 10px;border-bottom:1.5px solid var(--ink)}
+th:first-child,td:first-child{text-align:left}
+td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:right;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
+td:first-child{font-family:Inter}
+tr.new td:first-child::after{content:" ● new pumps";color:var(--you);font-size:10px;font-family:Inter}
+.flag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:20px;background:var(--util-soft);color:var(--util);font-family:Inter;margin-left:6px}
+
+/* events */
+.events{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.event{font-size:11.5px;border:1px solid var(--util-soft);background:#fff;border-radius:20px;padding:4px 11px}
+.event b{color:var(--util)}
+
+/* helper */
+.helper{background:var(--ink);color:#e6eaee;border-radius:14px;padding:22px}
+.helper h2{color:#fff}
+.helper .lead{color:#aeb6c0}
+.fields{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}
+.fields label{font-size:11px;color:#9aa6b2;display:block;margin-bottom:4px;letter-spacing:.04em}
+.fields input{width:100%;padding:9px 10px;border-radius:8px;border:1px solid #2b333f;background:#0f141b;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:14px}
+.btn{font-family:'Space Grotesk';font-weight:600;font-size:13px;border:none;border-radius:9px;padding:10px 16px;cursor:pointer;background:var(--now);color:#fff}
+.btn.ghost{background:transparent;border:1px solid #39424f;color:#cbd5e1}
+.out{font-family:'IBM Plex Mono',monospace;font-size:13px;background:#0f141b;border:1px solid #2b333f;border-radius:8px;padding:12px;margin-top:12px;color:#7ee0bf;word-break:break-all;display:none}
+footer{margin-top:54px;padding-top:18px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted)}
+footer a{color:var(--muted);text-decoration:underline}
+@media(max-width:760px){
+  .hero{grid-template-columns:1fr}.net-side{order:-1;padding:20px}
+  .kpis{grid-template-columns:1fr 1fr}.fields{grid-template-columns:1fr 1fr}
+  h1{font-size:24px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <div class="brandline" id="brand">Household Energy Tracker</div>
+    <h1>I keep cutting my usage.<br>Dominion keeps raising the rate.</h1>
+  </div>
+  <div class="live"><span class="dot"></span><span id="asof">updating…</span></div>
+</header>
+<p class="note">A real household in <span id="loc">Virginia Beach, VA</span> tracking, month over month, what its own efficiency saves — against what the utility's rate increases take back. Updated when each new bill posts.</p>
+
+<!-- HERO SCOREBOARD -->
+<div class="hero" id="hero">
+  <div class="side you-side">
+    <div class="cap">What I saved</div>
+    <div class="big" id="heroYou">—</div>
+    <div class="sub">by using less than the old house would, valued at the old rate · cumulative</div>
+  </div>
+  <div class="side net-side">
+    <div class="cap">Net, me vs. utility</div>
+    <div class="big" id="heroNet">—</div>
+    <div class="sub" id="heroNetSub">cumulative since tracking began</div>
+  </div>
+  <div class="side util-side">
+    <div class="cap">What rate hikes took</div>
+    <div class="big" id="heroUtil">—</div>
+    <div class="sub">higher ¢/kWh applied to my usage · cumulative</div>
+  </div>
+</div>
+<div class="vs">▲ ME  ·  the tug of war  ·  UTILITY ▲</div>
+
+<!-- TUG OF WAR -->
+<section>
+  <div class="eyebrow">The tug of war</div>
+  <h2>Conservation vs. rate increases, dollar for dollar</h2>
+  <p class="lead">Each month my pump and thermostat changes pull dollars back into my pocket (green). Dominion's rising rate pulls them out (red). The gap between the lines is the net — am I winning, or just running to stand still?</p>
+  <div class="panel"><canvas id="tug"></canvas>
+    <div class="cap-sm">Cumulative dollars since tracking began. Savings are valued at the old-era rate so the two forces are directly comparable. Rate cost = my usage × (current implied rate − old-era rate).</div>
+  </div>
+</section>
+
+<!-- KPIS -->
+<section>
+  <div class="eyebrow">This month at a glance</div>
+  <h2 id="kpiMonthTitle">Latest month</h2>
+  <div class="kpis" id="kpis"></div>
+</section>
+
+<!-- MONTHLY TRENDS -->
+<section>
+  <div class="eyebrow">The two trend lines</div>
+  <h2>My usage is bending down. The rate isn't.</h2>
+  <p class="lead">Monthly electricity used (bars) against the all-in rate I actually pay per kWh (line). The vertical flags mark Dominion's published rate changes.</p>
+  <div class="panel"><canvas id="trends"></canvas></div>
+  <div class="events" id="events"></div>
+</section>
+
+<!-- WEATHER ADJUSTED -->
+<section>
+  <div class="eyebrow">Stripping out the weather</div>
+  <h2>Am I actually using less — or was it just a mild month?</h2>
+  <p class="lead">Raw usage rises and falls with the weather, which hides real change. This index compares each month to what my <em>old</em> house would have used in the <em>same</em> weather. Below 1.0 means I beat the old house. The markers show when the new pumps went in and when the 77°/68° thermostat discipline began.</p>
+  <div class="panel"><canvas id="windex"></canvas>
+    <div class="cap-sm">1.0 = exactly what the old pumps + old thermostat habits would have used in that month's weather (fit from <span id="nbase">—</span> baseline months). Lower is better.</div>
+  </div>
+</section>
+
+<!-- ENERGY SIGNATURE -->
+<section>
+  <div class="eyebrow">The HVAC lens</div>
+  <h2>My home's energy signature</h2>
+  <p class="lead">Every day plotted against its outdoor temperature. The U-shape is the story of the house: heating on the cold left, cooling on the warm right, a low "comfort band" in the middle. Holding 77° in summer and 68° in winter should flatten the steep ends over time — and the new pumps already pulled the warm-weather days down (green vs. grey).</p>
+  <div class="panel"><canvas id="signature"></canvas>
+    <div class="cap-sm">Grey = old pumps (through Apr 10 2026). Green = new variable-speed pool + hot tub pumps (Apr 11 2026 on). As the consistent-setpoint months accumulate, watch the warm-side and cold-side slopes flatten — that's the thermostat discipline showing up.</div>
+  </div>
+</section>
+
+<!-- TABLE -->
+<section>
+  <div class="eyebrow">The receipts</div>
+  <h2>Every month, on the record</h2>
+  <div class="panel" style="padding-top:8px"><table id="tbl"></table></div>
+</section>
+
+<!-- HELPER -->
+<section>
+  <div class="helper">
+    <div class="eyebrow" style="color:var(--now)">Keep it alive</div>
+    <h2>Monthly update helper</h2>
+    <p class="lead">Type this month's three numbers. I'll write the exact line to paste into <span class="mono">data.js</span> — the only file you ever edit.</p>
+    <div class="fields">
+      <div><label>Month (YYYY-MM)</label><input id="iMonth" placeholder="2026-07"></div>
+      <div><label>kWh used</label><input id="iKwh" placeholder="2400"></div>
+      <div><label>Bill ($)</label><input id="iBill" placeholder="414.15"></div>
+      <div><label>Avg temp (°F)</label><input id="iTemp" placeholder="79"></div>
+    </div>
+    <button class="btn" onclick="genLine()">Write my data line</button>
+    <button class="btn ghost" onclick="document.getElementById('out').style.display='none'">Clear</button>
+    <div class="out mono" id="out"></div>
+    <p class="lead" style="margin-top:14px;font-size:13px">Then: open <span class="mono">data.js</span> → paste the line as the new last entry inside <span class="mono">MONTHLY</span> (before the <span class="mono">]</span>) → save → upload to your repo. The site rebuilds itself. Full steps are in <span class="mono">PUBLISH.md</span>.</p>
+  </div>
+</section>
+
+<footer>
+  <div id="srcfoot"></div>
+  <p>Single-household data; not representative of any other customer. Usage from Dominion smart-meter exports; rate context from Dominion Energy and Virginia State Corporation Commission filings. Built to be edited by a human, once a month.</p>
+</footer>
+
+</div>
+
+<script src="data.js"></script>
+<script>
+/* ---------- helpers ---------- */
+const $=id=>document.getElementById(id);
+const fmt$=v=>(v<0?'-':'')+'$'+Math.abs(v).toLocaleString(undefined,{maximumFractionDigits:0});
+const monthName=ym=>{const[y,m]=ym.split('-');return new Date(y,m-1,1).toLocaleString('en',{month:'short',year:'2-digit'})};
+const daysIn=ym=>{const[y,m]=ym.split('-').map(Number);return new Date(y,m,0).getDate()};
+function dd(t,days){return {cdd:Math.max(0,t-65)*days, hdd:Math.max(0,65-t)*days};}
+
+/* 3x3 OLS via Gaussian elimination: fit kwh = b0 + b1*cdd + b2*hdd */
+function solve3(A,y){
+  const M=A.map((r,i)=>[...r,y[i]]);
+  for(let c=0;c<3;c++){
+    let p=c;for(let r=c+1;r<3;r++)if(Math.abs(M[r][c])>Math.abs(M[p][c]))p=r;
+    [M[c],M[p]]=[M[p],M[c]];
+    for(let r=0;r<3;r++){if(r===c)continue;const f=M[r][c]/M[c][c];for(let k=c;k<4;k++)M[r][k]-=f*M[c][k];}
+  }
+  return [M[0][3]/M[0][0],M[1][3]/M[1][1],M[2][3]/M[2][2]];
+}
+function fitSignature(rows){
+  // normal equations X'X b = X'y, X cols [1,cdd,hdd]
+  let XtX=[[0,0,0],[0,0,0],[0,0,0]],Xty=[0,0,0];
+  rows.forEach(r=>{const x=[1,r.cdd,r.hdd];for(let i=0;i<3;i++){Xty[i]+=x[i]*r.kwh;for(let j=0;j<3;j++)XtX[i][j]+=x[i]*x[j];}});
+  try{const b=solve3(XtX,Xty);return {b0:b[0],b1:b[1],b2:b[2]};}catch(e){return null;}
+}
+
+/* ---------- compute ---------- */
+$('brand').textContent=(CONFIG.householdName||'Household')+' · Energy Tracker';
+$('loc').textContent=CONFIG.location||'';
+
+const rows=MONTHLY.map(m=>{
+  const days=daysIn(m.month), {cdd,hdd}=dd(m.avgTempF,days);
+  const rate=(m.bill!=null&&m.kwh&&!m.partial)?m.bill/m.kwh:null; // implied rate, full months only
+  return {...m,days,cdd,hdd,rate,
+    isNew:m.month>=CONFIG.pumpInstall.slice(0,7),
+    inBase:CONFIG.baselineMonths.includes(m.month)};
+});
+
+const baseRows=rows.filter(r=>r.inBase);
+const sig=fitSignature(baseRows);
+function expected(r){return sig?Math.max(0,sig.b0+sig.b1*r.cdd+sig.b2*r.hdd):r.kwh;}
+
+// Dominion's PUBLISHED typical rate path ($/kWh), stepped by date — the sourced
+// "what the utility charges" backbone. Robust where the implied rate is noisy.
+const pubPath=TYPICAL_BILL.map(t=>({m:t.date,r:t.typicalBill/1000})).sort((a,b)=>a.m<b.m?-1:1);
+function pubRate(ym){let r=pubPath[0].r;for(const p of pubPath){if(ym>=p.m)r=p.r;}return r;}
+
+let oldRate=CONFIG.oldRate;
+if(oldRate==='auto'||oldRate==null){
+  const rr=baseRows.map(r=>r.rate).filter(x=>x);
+  oldRate=rr.reduce((a,b)=>a+b,0)/rr.length;
+}
+
+rows.forEach(r=>{
+  r.pub=pubRate(r.month);
+  if(r.partial){ r.exp=null; r.windex=null; r.usageSaved=null; r.rateCost=null; return; }
+  r.exp=expected(r);
+  r.windex=r.exp?r.kwh/r.exp:null;
+  // What I saved: kWh I avoided vs the old house, valued at the prevailing published rate.
+  r.usageSaved=r.pub*(r.exp-r.kwh);
+  // What rate hikes took: my usage x (published rate now - old-era anchor rate).
+  r.rateCost=r.kwh*(r.pub-oldRate);
+});
+// cumulative tug of war
+let cs=0,cr=0;
+rows.forEach(r=>{ if(!r.partial){ cs+=r.usageSaved; cr+=r.rateCost; } r.cumSaved=cs; r.cumRate=cr; r.cumNet=cs-cr; });
+const last=[...rows].reverse().find(r=>!r.partial)||rows[rows.length-1];
+
+/* ---------- hero ---------- */
+$('asof').textContent='as of '+monthName(rows[rows.length-1].month);
+$('heroYou').textContent=fmt$(last.cumSaved);
+$('heroUtil').textContent=fmt$(last.cumRate);
+$('heroNet').textContent=(last.cumNet>=0?'+':'')+fmt$(last.cumNet);
+$('heroNetSub').textContent=last.cumNet>=0?'ahead of the old house + old rates':'behind — rates outrunning savings';
+$('nbase').textContent=baseRows.length;
+
+/* ---------- kpis ---------- */
+$('kpiMonthTitle').textContent=monthName(last.month)+' usage';
+const rateChgPct=((last.rate-oldRate)/oldRate*100);
+const usageChgPct=last.exp?((last.kwh-last.exp)/last.exp*100):0;
+const kpis=[
+  {c:'you',l:'Usage vs. old house',v:(usageChgPct<=0?'':'+')+usageChgPct.toFixed(0)+'%',s:'weather-matched'},
+  {c:'util',l:'My rate vs. old era',v:(rateChgPct>=0?'+':'')+rateChgPct.toFixed(0)+'%',s:(last.rate*100).toFixed(1)+'¢/kWh now'},
+  {c:'',l:'This month: saved',v:fmt$(last.usageSaved),s:'from using less'},
+  {c:'',l:'This month: rate cost',v:fmt$(last.rateCost||0),s:'from higher ¢/kWh'},
+];
+$('kpis').innerHTML=kpis.map(k=>`<div class="kpi ${k.c}"><div class="l">${k.l}</div><div class="v">${k.v}</div><div class="s">${k.s}</div></div>`).join('');
+
+/* ---------- charts ---------- */
+Chart.defaults.font.family="Inter, sans-serif";Chart.defaults.color="#475569";
+const G='#0E9F6E',R='#DC2626',INK='#14181F',NOW='#0891B2',GREY='#94A3B8';
+const labels=rows.map(r=>monthName(r.month));
+
+// vertical event marker plugin
+function eventLines(events){
+  return {id:'ev',afterDraw(c){const xa=c.scales.x,ya=c.chartArea;if(!xa)return;
+    events.forEach(e=>{const i=rows.findIndex(r=>r.month===e.slice(0,7));if(i<0)return;
+      const x=xa.getPixelForValue(i);c.ctx.save();c.ctx.strokeStyle='rgba(217,119,6,.55)';c.ctx.setLineDash([4,3]);
+      c.ctx.beginPath();c.ctx.moveTo(x,ya.top);c.ctx.lineTo(x,ya.bottom);c.ctx.stroke();c.ctx.restore();});}};
+}
+
+new Chart($('tug'),{type:'line',data:{labels,datasets:[
+  {label:'Cumulative saved (me)',data:rows.map(r=>Math.round(r.cumSaved)),borderColor:G,backgroundColor:'rgba(14,159,110,.12)',fill:true,tension:.25,pointRadius:0,borderWidth:2.5},
+  {label:'Cumulative taken by rate hikes (utility)',data:rows.map(r=>Math.round(r.cumRate)),borderColor:R,backgroundColor:'rgba(220,38,38,.10)',fill:true,tension:.25,pointRadius:0,borderWidth:2.5},
+  {label:'Net (me − utility)',data:rows.map(r=>Math.round(r.cumNet)),borderColor:INK,borderDash:[5,4],fill:false,tension:.25,pointRadius:0,borderWidth:2}
+]},options:{plugins:{legend:{position:'top'},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmt$(c.raw)}}},
+  scales:{y:{ticks:{callback:v=>'$'+v}}}}});
+
+new Chart($('trends'),{data:{labels,datasets:[
+  {type:'bar',label:'kWh used',data:rows.map(r=>r.kwh),backgroundColor:rows.map(r=>r.partial?'#cbd5e1':(r.isNew?G:INK)),yAxisID:'y',order:3},
+  {type:'line',label:'My all-in rate (¢/kWh)',data:rows.map(r=>r.rate?+(r.rate*100).toFixed(1):null),borderColor:R,backgroundColor:R,yAxisID:'y1',tension:.3,pointRadius:3,borderWidth:2.5,spanGaps:true,order:1},
+  {type:'line',label:"Dominion's published typical rate",data:rows.map(r=>+(r.pub*100).toFixed(1)),borderColor:'#D97706',borderDash:[5,4],yAxisID:'y1',tension:0,pointRadius:0,borderWidth:2,order:2}
+]},options:{plugins:{legend:{position:'top'}},scales:{
+  y:{position:'left',title:{display:true,text:'kWh'},grid:{display:false}},
+  y1:{position:'right',title:{display:true,text:'¢ / kWh'},grid:{drawOnChartArea:false},suggestedMin:10,suggestedMax:24}
+}},plugins:[eventLines(RATE_EVENTS.map(e=>e.date))]});
+
+new Chart($('windex'),{type:'line',data:{labels,datasets:[
+  {label:'Weather-adjusted usage index',data:rows.map(r=>r.windex?+r.windex.toFixed(3):null),borderColor:NOW,backgroundColor:'rgba(8,145,178,.10)',fill:true,tension:.3,pointRadius:3,borderWidth:2.5,spanGaps:true},
+  {label:'old-house line (1.0)',data:rows.map(()=>1),borderColor:GREY,borderDash:[5,4],pointRadius:0,borderWidth:1.5,fill:false}
+]},options:{plugins:{legend:{position:'top'}},scales:{y:{suggestedMin:.7,suggestedMax:1.15}}},
+  plugins:[eventLines([CONFIG.pumpInstall,CONFIG.setpointStart])]});
+
+new Chart($('signature'),{type:'scatter',data:{datasets:[
+  {label:'Old pumps',data:SIGNATURE.oldDays.map(p=>({x:p[0],y:p[1]})),backgroundColor:'rgba(100,116,139,.4)',pointRadius:3},
+  {label:'New pumps',data:SIGNATURE.newDays.map(p=>({x:p[0],y:p[1]})),backgroundColor:'rgba(14,159,110,.6)',pointRadius:3.5}
+]},options:{plugins:{legend:{position:'top'},tooltip:{callbacks:{label:c=>c.parsed.x+'°F · '+c.parsed.y+' kWh'}}},
+  scales:{x:{title:{display:true,text:'Daily mean outdoor temp (°F)'}},y:{title:{display:true,text:'Daily kWh'}}}}});
+
+/* ---------- events + table + footer ---------- */
+$('events').innerHTML=RATE_EVENTS.map(e=>`<a class="event" href="${e.source}" target="_blank" rel="noopener"><b>${e.date.slice(0,7)}</b> · ${e.label} (${e.detail})</a>`).join('');
+
+$('tbl').innerHTML='<thead><tr><th>Month</th><th>kWh</th><th>Bill</th><th>¢/kWh</th><th>Wx index</th><th>Saved</th><th>Rate cost</th></tr></thead><tbody>'+
+  rows.map(r=>`<tr class="${r.isNew&&!r.partial?'new':''}"><td>${monthName(r.month)}${r.partial?'<span class="flag">partial</span>':''}</td>
+   <td>${r.kwh.toLocaleString()}</td><td>${r.bill!=null?'$'+r.bill.toFixed(0):'—'}</td>
+   <td>${r.rate?(r.rate*100).toFixed(1):'—'}</td><td>${r.windex?r.windex.toFixed(2):'—'}</td>
+   <td style="color:${r.usageSaved>=0?'#0E9F6E':'#DC2626'}">${r.usageSaved!=null?fmt$(r.usageSaved):'—'}</td>
+   <td style="color:#DC2626">${r.rateCost!=null?fmt$(r.rateCost):'—'}</td></tr>`).join('')+'</tbody>';
+
+$('srcfoot').innerHTML='Sourced rate events: '+RATE_EVENTS.map(e=>`<a href="${e.source}" target="_blank" rel="noopener">${e.label}</a>`).join(' · ');
+
+/* ---------- update helper ---------- */
+function genLine(){
+  const m=$('iMonth').value.trim(),k=$('iKwh').value.trim(),b=$('iBill').value.trim(),t=$('iTemp').value.trim();
+  if(!/^\d{4}-\d{2}$/.test(m)){alert('Month must look like 2026-07');return;}
+  const line=`  { month:"${m}", kwh:${k||0}, bill:${b||'null'}, avgTempF:${t||0} },`;
+  const o=$('out');o.style.display='block';o.textContent=line;
+  if(navigator.clipboard)navigator.clipboard.writeText(line).catch(()=>{});
+}
+</script>
+</body>
+</html>
