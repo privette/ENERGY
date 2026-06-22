@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The New Pumps: A First Look (10 Weeks In)</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:980px;margin:0 auto;padding:32px 24px;background:#fafbfc;color:#222;line-height:1.6}
+header{border-bottom:4px solid #1f4e78;padding-bottom:20px;margin-bottom:32px}
+h1{color:#1f4e78;margin:0 0 8px;font-size:32px}.subtitle{color:#666;font-size:14px}
+h2{color:#1f4e78;border-bottom:2px solid #e5e7eb;padding-bottom:8px;margin-top:48px;font-size:22px}
+h3{color:#1f4e78;font-size:17px;margin-top:28px}
+.tldr{background:linear-gradient(135deg,#ecfdf5 0%,#f0fdf4 100%);border-left:5px solid #059669;padding:20px 24px;border-radius:6px;margin:24px 0}
+.tldr h3{margin-top:0;color:#065f46}
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0}
+.kpi{background:white;border:1px solid #e5e7eb;border-radius:8px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.kpi .label{font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.kpi .value{font-size:26px;font-weight:700;color:#1f4e78;margin:6px 0 4px}.kpi .sub{font-size:12px;color:#9ca3af}
+.kpi.green .value{color:#059669}.kpi.amber .value{color:#b45309}
+.chart-wrap{background:white;border:1px solid #e5e7eb;border-radius:8px;padding:20px;margin:20px 0;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.chart-wrap h3{margin-top:0}canvas{max-height:380px !important}
+table{width:100%;border-collapse:collapse;margin:16px 0;background:white;border-radius:6px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+th{background:#1f4e78;color:white;padding:10px;text-align:left;font-size:13px}
+td{padding:10px;border-bottom:1px solid #f3f4f6;font-size:13px}tr:last-child td{border-bottom:none}
+.down{color:#059669;font-weight:600}.up{color:#dc2626;font-weight:600}.done{color:#059669;font-weight:700}.next{color:#b45309;font-weight:600}
+.callout{background:#eff6ff;border-left:4px solid #1f4e78;padding:16px 20px;margin:20px 0;border-radius:4px}
+.warn{background:#fffbeb;border-left:4px solid #f59e0b;padding:16px 20px;margin:20px 0;border-radius:4px}
+.method{background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:16px 20px;font-size:13px;color:#4b5563}
+footer{margin-top:48px;padding-top:24px;border-top:1px solid #e5e7eb;font-size:12px;color:#9ca3af;text-align:center}
+@media(max-width:700px){.kpi-grid{grid-template-columns:1fr 1fr}}
+</style></head><body>
+<header><h1>The New Pumps: A First Look</h1>
+<div class="subtitle">Early read on the variable-speed pool pump &amp; new hot tub pumps (installed Apr 11, 2026) vs. a year of old-pump data &mdash; Privette Household, Virginia Beach VA</div></header>
+
+<div class="tldr"><h3>TL;DR &mdash; Promising, but it's early</h3>
+<p>The new pumps went in <strong>April 11, 2026</strong>, so there are only about <strong>10 weeks</strong> of post-install data &mdash; and almost no deep-summer days yet, which is exactly when a pool pump matters most. With that caveat front and center:</p>
+<p><strong>On equally warm days (~80&deg;F, when the pool is actually running), the house now uses about 17% less &mdash; roughly 95 &rarr; 79 kWh/day.</strong> The reduction <em>scales with temperature</em>: big in warm weather, near zero in cool shoulder weeks when the pool barely runs and there's little pump load to save. The single cleanest signal is a <strong>20% lower overnight baseline</strong> &mdash; the variable-speed and hot tub pumps sipping power instead of gulping it. Worth roughly <strong>$2.50&ndash;3/day</strong> on hot days. Treat this as a directional first look; the real test is summer 2026.</p></div>
+
+<h2>The Headline Numbers</h2>
+<div class="kpi-grid">
+<div class="kpi"><div class="label">Old pump &mdash; warm days</div><div class="value">95 kWh</div><div class="sub">avg/day @ 80&deg;F &middot; n=57</div></div>
+<div class="kpi green"><div class="label">New pumps &mdash; warm days</div><div class="value">79 kWh</div><div class="sub">avg/day @ 79&deg;F &middot; n=18</div></div>
+<div class="kpi green"><div class="label">Reduction (warm, matched)</div><div class="value">&minus;17%</div><div class="sub">scales with temperature</div></div>
+<div class="kpi green"><div class="label">Overnight baseline</div><div class="value">&minus;20%</div><div class="sub">cleanest single signal</div></div>
+<div class="kpi amber"><div class="label">Days of new-pump data</div><div class="value">72</div><div class="sub">since Apr 11, 2026</div></div>
+<div class="kpi"><div class="label">Current implied rate</div><div class="value">16.7&cent;</div><div class="sub">/kWh, recent bills</div></div>
+</div>
+
+<h2>The Key Insight: Savings Scale With Temperature</h2>
+<p>Rather than one blunt average, this groups every day by its temperature and compares old-pump vs new-pump days <em>within each band</em>. That controls for weather and reveals the real pattern: the hotter it gets &mdash; the more the pool runs &mdash; the more the new pump saves.</p>
+<div class="chart-wrap"><h3>Avg Daily kWh by Temperature Band &mdash; Old Pump vs. New Pumps</h3><canvas id="bins"></canvas>
+<p style="font-size:12px;color:#6b7280;margin-top:8px"><em>In cool bands (50&ndash;70&deg;F) the gap is small &mdash; the pool runs little, so an efficient pump saves little. In warm bands (75&ndash;85&deg;F) the new-pump bars drop 14&ndash;19% below old. That's the variable-speed pump earning its keep when the pool is working hardest. Note the new-pump warm bars rest on only a handful of days so far.</em></p></div>
+
+<h2>The Honest Overview: Every Day vs. Temperature</h2>
+<p>Each dot is a single day, plotted against that day's average temperature. Weather is on the x-axis, so equal-temperature days line up vertically. New-pump days (green) generally sit at or below old-pump days (grey) &mdash; with the clearest separation on the warm right-hand side.</p>
+<div class="chart-wrap"><h3>Daily kWh vs. Daily Mean Temp</h3><canvas id="scatter"></canvas>
+<p style="font-size:12px;color:#6b7280;margin-top:8px"><em>Grey = old pumps (Jun 2025&ndash;Apr 10 2026). Green = new pumps (Apr 11 2026 on). The green cloud only reaches ~86&deg;F so far &mdash; we don't yet have the 88&ndash;95&deg;F July/August days where the biggest savings should appear.</em></p></div>
+
+<div class="warn"><strong>Correction from the prior draft:</strong> An earlier version of this report guessed the pumps were installed in <em>August 2025</em> based on a dip in the load curve, and reported an ~18% &ldquo;validated&rdquo; saving. That was wrong &mdash; the dip was just seasonal (less A/C as summer ended); the <em>old</em> pumps ran until April 10, 2026. With the correct install date, the saving is real but smaller, temperature-dependent, and based on far less data. This version supersedes that one.</div>
+
+<h2>The Load-Curve Fingerprint</h2>
+<p>Averaging every half-hour across matched warm days (~80&deg;F) shows the daily &ldquo;shape.&rdquo; The old single-speed pump created a tall midday block (a big motor on a daytime timer). The variable-speed pump runs low and continuous instead &mdash; so the block flattens and the remaining peak is just afternoon air conditioning.</p>
+<div class="chart-wrap"><h3>Average Half-Hourly Load &mdash; Old vs. New Pumps (both ~80&deg;F)</h3><canvas id="hourly"></canvas></div>
+<div class="callout"><strong>What changed in the shape:</strong> the old curve peaked at midday (the pump); the new curve's peak is lower and shifts to ~3 PM (air conditioning). Biggest measurable drop is the <strong>overnight floor, &minus;20%</strong> (1.36 &rarr; 1.09 kWh/half-hr) &mdash; consistent with the more efficient pumps humming quietly through the night rather than the old hot-tub pumps' heavier draw.</div>
+
+<h2>A Full Year of Usage</h2>
+<p>Monthly totals across the whole data window. The red line marks the April 11 install &mdash; only the last ~2.5 months reflect the new pumps. June 2025 and June 2026 are partial months.</p>
+<div class="chart-wrap"><h3>Monthly kWh &mdash; Jun 2025 &rarr; Jun 2026</h3><canvas id="monthly"></canvas></div>
+
+<h2>What It's Worth, and the Rate Headwind</h2>
+<p>Recent bills imply an all-in rate around <strong>16.7&cent;/kWh</strong> (Apr&ndash;Jun 2026: $320&ndash;331/mo). At that rate, the ~16 kWh/day warm-weather saving is worth about <strong>$2.50&ndash;3/day</strong> when it's hot &mdash; less in mild months. Don't annualize the hot-day figure; the pool runs far less in winter.</p>
+<div class="warn"><strong>Running to stand still:</strong> Dominion's first base-rate increase since 1992 took effect <a href="https://www.scc.virginia.gov/about-the-scc/newsreleases/release/scc-issues-order-on-dev-biennial-review-2025/scc-rules-in-dev-biennial-review-case.html">January 1, 2026 (~+$11.24/mo</a> for a typical bill), with <a href="https://cardinalnews.org/2025/11/26/regulators-approve-dominion-energy-rate-increase/">another ~$2.36/mo in January 2027</a>. The pump savings partly just offset rising rates &mdash; which is the whole reason to keep squeezing usage.</div>
+
+<h2>Where Things Stand &mdash; Action Plan</h2>
+<table><thead><tr><th>Action</th><th>Status</th><th>What the data shows</th></tr></thead><tbody>
+<tr><td><strong>Variable-speed pool pump</strong></td><td class="done">DONE (Apr 11)</td><td>Early signal positive: midday block flattening, ~17% lower on warm days. Needs a full summer to confirm.</td></tr>
+<tr><td><strong>Hot tub pump replacement</strong></td><td class="done">DONE (Apr 11)</td><td>Overnight baseline down ~20% &mdash; the clearest win so far.</td></tr>
+<tr><td><strong>Re-run after summer 2026</strong></td><td class="next">CRITICAL NEXT</td><td>Only ~18 warm new-pump days exist. Pull data again in Sept for the real verdict.</td></tr>
+<tr><td><strong>Dominion Off-Peak Plan</strong></td><td class="next">FREE WIN</td><td>A low-and-slow variable pump is ideal to shift overnight. Enroll; you have the smart meter.</td></tr>
+<tr><td><strong>A/C strategy</strong></td><td class="next">NEXT</td><td>Afternoon A/C is now the dominant peak. Smart thermostat is the next real lever.</td></tr>
+</tbody></table>
+
+<h2>How I Did This (Methodology)</h2>
+<div class="method">
+<p><strong>Data:</strong> Dominion interval export for account 6552484617 (half-hourly kWh, Jun 22 2025 &rarr; Jun 21 2026, 365 days); Dominion payment export (recent bills); Virginia Beach daily mean temperature from Open-Meteo to control for weather; public Dominion/SCC rate filings.</p>
+<p><strong>Regime split:</strong> Install date Apr 11 2026 (provided). Old = before that date (293 days), New = on/after (72 days).</p>
+<p><strong>Weather control:</strong> Because the new-pump window is spring/early-summer and the old window spans all seasons, days are compared <em>within temperature bands</em> and on a matched-temperature basis, so equipment &mdash; not weather &mdash; drives the difference. Pool usage is itself seasonal, so warm-band comparisons (summer-old vs early-summer-new, both pool-active) are the most apples-to-apples.</p>
+<p><strong>Big caveat:</strong> only ~10 weeks and ~18 genuinely warm days of new-pump data exist, topping out near 86&deg;F. The deep-summer days where a pool pump saves the most aren't in the data yet. This is a directional first look, not a final verdict. Behavior changes (not just the pumps) also contribute.</p>
+<p><strong>For a definitive number:</strong> the clean comparison is the <em>same calendar window</em> year-over-year &mdash; Apr 11&ndash;Jun 21 2025 (old) vs 2026 (new). The 2025 side sits in the earlier three-year export, not this file; adding it would isolate the equipment with no seasonal guesswork.</p>
+</div>
+<footer>Built from Dominion interval &amp; payment data and Open-Meteo temperature data. Rate context from Dominion and Virginia SCC filings. Charts: Chart.js. Single-household data; preliminary (10 weeks post-install).</footer>
+
+<script>
+const data={"install": "2026-04-11", "n_new": 72, "n_old": 293, "new_days": 72, "warm_old_daily": 95.0, "warm_new_daily": 79.0, "warm_old_n": 57, "warm_new_n": 18, "weighted_pct": -11, "warm_pct": -15, "hour_labels": ["12:00 AM", "12:30 AM", "01:00 AM", "01:30 AM", "02:00 AM", "02:30 AM", "03:00 AM", "03:30 AM", "04:00 AM", "04:30 AM", "05:00 AM", "05:30 AM", "06:00 AM", "06:30 AM", "07:00 AM", "07:30 AM", "08:00 AM", "08:30 AM", "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM", "01:00 PM", "01:30 PM", "02:00 PM", "02:30 PM", "03:00 PM", "03:30 PM", "04:00 PM", "04:30 PM", "05:00 PM", "05:30 PM", "06:00 PM", "06:30 PM", "07:00 PM", "07:30 PM", "08:00 PM", "08:30 PM", "09:00 PM", "09:30 PM", "10:00 PM", "10:30 PM", "11:00 PM", "11:30 PM"], "oldc": [1.523, 1.765, 1.48, 1.42, 1.39, 1.342, 1.298, 1.292, 1.307, 1.378, 1.463, 1.469, 1.475, 1.569, 1.799, 1.73, 1.785, 1.941, 1.88, 2.005, 2.111, 2.249, 2.242, 2.495, 2.426, 2.836, 2.577, 2.58, 2.559, 2.572, 2.549, 2.641, 2.671, 2.582, 2.502, 2.378, 2.429, 2.337, 2.272, 2.231, 2.121, 1.924, 1.868, 1.831, 1.747, 1.682, 1.616, 1.604], "newc": [1.352, 1.283, 1.159, 1.265, 1.132, 1.066, 0.998, 1.006, 1.052, 1.046, 1.23, 1.226, 1.16, 1.38, 1.57, 1.454, 1.416, 1.676, 1.494, 1.811, 1.85, 1.883, 1.783, 2.024, 2.398, 2.089, 2.09, 2.335, 2.289, 2.296, 2.609, 2.314, 2.196, 2.01, 2.208, 2.129, 2.044, 1.881, 1.615, 1.613, 1.452, 1.435, 1.471, 1.564, 1.4, 1.45, 1.325, 1.173], "bin_labels": ["50-55", "55-60", "60-65", "65-70", "70-75", "75-80", "80-85", "85-90"], "bin_old": [63.3, 73.4, 67.3, 68.1, 71.2, 87.2, 105.6, 99.4], "bin_new": [60.7, 63.7, 59.8, 59.3, 70.7, 75.4, 85.3, 91.4], "bin_n": [6, 9, 12, 16, 10, 12, 6, 1], "sc_old": [[80.2, 95.5], [84.5, 126.7], [87.0, 111.7], [87.7, 91.1], [86.5, 95.5], [82.1, 118.2], [82.5, 108.1], [83.4, 83.4], [83.9, 108.2], [84.8, 108.6], [78.6, 77.1], [78.6, 86.3], [78.3, 103.4], [77.7, 97.3], [79.2, 107.9], [81.5, 98.4], [83.9, 102.1], [81.5, 126.9], [79.4, 93.7], [78.1, 90.0], [80.1, 97.6], [80.0, 98.5], [80.3, 91.7], [80.0, 100.1], [80.4, 102.5], [83.5, 120.7], [81.0, 114.9], [80.7, 97.9], [82.8, 110.3], [80.3, 101.4], [79.1, 106.9], [79.7, 77.5], [79.4, 61.0], [85.5, 99.2], [83.9, 99.7], [82.6, 101.2], [82.4, 107.6], [83.4, 103.8], [83.4, 108.0], [83.8, 100.9], [78.7, 91.6], [76.4, 74.6], [74.4, 61.3], [74.5, 54.9], [74.9, 77.9], [75.9, 90.1], [73.8, 91.7], [74.7, 78.9], [73.4, 78.4], [74.7, 59.0], [76.1, 76.1], [77.7, 87.4], [78.1, 89.7], [79.1, 98.0], [77.8, 95.7], [77.8, 79.7], [78.2, 89.1], [77.9, 110.0], [77.3, 81.9], [78.0, 71.8], [75.8, 61.8], [73.1, 80.6], [73.6, 63.7], [74.6, 59.6], [75.6, 61.2], [75.3, 69.8], [72.4, 90.9], [71.1, 66.4], [72.6, 63.4], [70.9, 51.5], [70.9, 65.0], [71.2, 68.1], [71.0, 48.5], [70.9, 58.0], [73.4, 94.3], [77.4, 94.4], [79.8, 92.8], [72.1, 85.4], [71.0, 72.3], [70.8, 51.8], [71.8, 70.1], [70.8, 74.7], [71.5, 79.5], [70.8, 65.5], [70.6, 82.1], [71.1, 70.9], [66.7, 77.2], [65.1, 67.7], [69.1, 68.0], [70.4, 81.0], [69.9, 88.0], [70.5, 65.9], [69.0, 51.2], [71.8, 74.0], [75.6, 85.4], [78.5, 86.5], [75.7, 89.9], [73.7, 64.7], [71.8, 73.6], [72.0, 100.5], [71.9, 78.7], [68.9, 77.8], [65.6, 76.1], [65.4, 76.2], [63.5, 66.5], [64.3, 65.9], [65.8, 73.2], [69.5, 83.0], [71.1, 76.6], [63.8, 71.6], [63.3, 53.6], [67.8, 62.4], [67.4, 105.2], [63.8, 70.7], [63.3, 74.1], [64.4, 52.9], [59.7, 49.9], [56.9, 58.5], [58.8, 75.1], [65.5, 68.7], [60.7, 80.7], [59.6, 70.3], [62.5, 76.5], [56.7, 76.1], [56.6, 80.6], [54.8, 82.7], [56.7, 107.6], [58.9, 74.1], [57.7, 70.8], [59.5, 82.2], [65.2, 70.6], [56.1, 75.2], [52.9, 75.6], [54.8, 75.6], [58.1, 91.4], [55.9, 70.0], [56.6, 85.4], [55.9, 94.4], [55.9, 81.6], [62.7, 69.0], [65.0, 78.1], [52.9, 72.9], [40.8, 92.3], [47.9, 85.8], [52.1, 54.3], [50.1, 108.0], [58.1, 81.7], [61.5, 70.4], [49.1, 89.5], [48.9, 50.4], [52.7, 58.8], [50.6, 48.0], [54.4, 39.7], [58.2, 64.9], [54.3, 79.2], [51.6, 68.2], [57.7, 74.0], [65.7, 79.6], [50.3, 83.7], [39.4, 79.1], [38.5, 64.3], [50.7, 64.5], [44.5, 78.3], [49.7, 75.8], [40.3, 47.1], [40.4, 48.8], [43.8, 99.9], [42.7, 71.4], [41.9, 75.2], [38.0, 79.1], [35.0, 88.5], [40.7, 99.1], [42.7, 57.2], [36.6, 83.0], [40.6, 79.7], [37.1, 52.4], [26.6, 115.5], [32.8, 90.1], [43.2, 91.7], [48.7, 44.9], [57.6, 48.6], [41.5, 74.4], [45.7, 68.6], [39.6, 81.7], [44.6, 94.6], [50.0, 85.0], [50.2, 54.7], [43.7, 48.5], [44.4, 67.2], [43.2, 87.9], [56.4, 68.2], [35.2, 99.9], [35.3, 108.1], [38.8, 60.8], [38.7, 80.5], [37.4, 71.1], [36.5, 39.2], [41.6, 64.8], [51.6, 78.4], [55.6, 67.7], [47.9, 92.5], [55.5, 86.4], [64.9, 61.7], [52.2, 39.8], [38.6, 68.9], [42.4, 52.2], [46.7, 58.9], [40.5, 79.5], [33.0, 75.4], [45.0, 62.5], [42.6, 70.9], [36.2, 88.1], [34.6, 80.9], [35.8, 95.3], [49.6, 72.7], [42.9, 85.7], [26.1, 103.9], [36.8, 73.8], [33.1, 78.2], [27.9, 84.3], [30.3, 83.4], [28.0, 83.8], [26.7, 80.3], [23.7, 97.2], [24.6, 142.0], [29.4, 121.1], [33.6, 95.0], [36.6, 87.9], [33.1, 66.9], [32.1, 88.8], [29.4, 105.8], [23.8, 111.9], [27.0, 108.4], [40.2, 69.1], [49.0, 72.9], [36.6, 76.7], [32.4, 98.1], [38.2, 59.7], [44.2, 46.2], [39.4, 64.5], [43.4, 50.0], [57.0, 52.0], [50.8, 65.0], [54.5, 57.7], [49.5, 44.6], [40.7, 63.8], [37.3, 81.1], [36.0, 34.7], [45.3, 48.4], [51.2, 38.7], [40.9, 44.1], [43.8, 55.2], [44.3, 71.9], [40.1, 72.9], [43.6, 72.8], [53.2, 75.4], [61.9, 61.3], [54.5, 57.2], [57.3, 68.6], [68.5, 62.7], [62.6, 65.3], [66.1, 61.8], [71.2, 78.5], [56.9, 61.4], [44.7, 57.8], [54.3, 86.6], [52.5, 57.6], [64.2, 54.2], [42.8, 46.3], [37.2, 49.0], [41.8, 60.7], [50.9, 62.2], [56.9, 66.5], [65.5, 59.2], [60.9, 48.2], [42.3, 52.7], [46.1, 66.8], [64.3, 74.3], [60.3, 81.4], [44.6, 61.2], [44.9, 87.6], [60.5, 70.2], [67.5, 73.0], [70.8, 66.5], [69.8, 38.4], [70.0, 41.0], [71.1, 53.1], [69.4, 38.2], [53.6, 41.6], [53.4, 41.8], [45.7, 70.5], [48.8, 53.6], [52.4, 40.0]], "sc_new": [[57.7, 78.2], [56.2, 72.4], [69.9, 54.0], [74.5, 49.4], [76.7, 59.3], [77.9, 84.7], [73.0, 102.5], [67.2, 66.8], [62.5, 53.4], [54.4, 53.8], [50.6, 64.0], [62.9, 54.5], [65.5, 78.0], [66.6, 53.0], [64.3, 56.2], [54.7, 49.1], [53.6, 57.4], [53.9, 63.8], [58.3, 66.4], [61.5, 58.4], [56.3, 57.6], [55.3, 50.7], [55.0, 76.2], [62.9, 62.0], [68.7, 55.6], [70.6, 59.6], [59.3, 61.7], [56.8, 63.3], [64.3, 70.4], [67.2, 65.2], [60.6, 75.8], [56.8, 66.1], [62.3, 57.3], [61.8, 57.7], [59.9, 56.5], [67.8, 62.8], [73.7, 74.1], [79.7, 65.5], [80.6, 74.3], [80.1, 74.1], [72.2, 84.4], [61.7, 48.7], [65.8, 45.7], [67.7, 58.8], [73.6, 73.1], [72.4, 68.0], [75.4, 82.0], [72.8, 68.0], [67.6, 61.9], [68.4, 70.4], [62.6, 65.4], [67.1, 50.2], [62.5, 58.1], [66.7, 44.8], [69.9, 63.1], [75.5, 68.5], [81.6, 89.0], [80.4, 74.3], [69.0, 65.7], [66.6, 53.3], [79.0, 67.1], [83.2, 109.1], [86.1, 91.4], [79.5, 102.9], [79.5, 69.0], [75.9, 92.6], [72.0, 70.7], [74.5, 56.7], [83.0, 91.2], [76.2, 90.1], [76.4, 56.0], [76.0, 67.0]], "mon_labels": ["2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"], "mon_kwh": [938, 3093, 2372, 2260, 2285, 2230, 2365, 2319, 2051, 2025, 1760, 2013, 1531], "mon_n": [9, 31, 31, 30, 31, 30, 31, 31, 28, 31, 30, 31, 21], "implied_rate": 16.7};
+const colors={old:'#94a3b8',new:'#059669',blue:'#1f4e78',amber:'#f59e0b'};
+Chart.defaults.font.family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif";Chart.defaults.color='#374151';
+
+new Chart(document.getElementById('bins'),{type:'bar',data:{labels:data.bin_labels,datasets:[
+{label:'Old pump',data:data.bin_old,backgroundColor:colors.old},
+{label:'New pumps',data:data.bin_new,backgroundColor:colors.new}]},
+options:{plugins:{legend:{position:'top'},tooltip:{callbacks:{afterBody:(items)=>{const i=items[0].dataIndex;return 'New-pump days in band: '+data.bin_n[i]}}}},
+scales:{x:{title:{display:true,text:'Daily mean temperature (°F)'}},y:{title:{display:true,text:'Avg daily kWh'}}}}});
+
+new Chart(document.getElementById('scatter'),{type:'scatter',data:{datasets:[
+{label:'Old pumps (Jun 2025–Apr 10 2026)',data:data.sc_old.map(p=>({x:p[0],y:p[1]})),backgroundColor:'rgba(100,116,139,0.45)',pointRadius:3},
+{label:'New pumps (Apr 11 2026 on)',data:data.sc_new.map(p=>({x:p[0],y:p[1]})),backgroundColor:'rgba(5,150,105,0.55)',pointRadius:4}]},
+options:{plugins:{legend:{position:'top'},tooltip:{callbacks:{label:c=>c.parsed.x+'°F, '+c.parsed.y+' kWh'}}},
+scales:{x:{title:{display:true,text:'Daily mean temperature (°F)'}},y:{title:{display:true,text:'Daily usage (kWh)'}}}}});
+
+new Chart(document.getElementById('hourly'),{type:'line',data:{labels:data.hour_labels,datasets:[
+{label:'Old single-speed pump',data:data.oldc,borderColor:colors.old,backgroundColor:'transparent',tension:.3,pointRadius:0,borderWidth:2},
+{label:'New variable-speed + hot tub pumps',data:data.newc,borderColor:colors.new,backgroundColor:'transparent',tension:.3,pointRadius:0,borderWidth:2.5}]},
+options:{plugins:{legend:{position:'top'}},scales:{x:{ticks:{maxTicksLimit:12},title:{display:true,text:'Time of day'}},y:{title:{display:true,text:'Avg kWh per half-hour'}}}}});
+
+const installIdx=data.mon_labels.indexOf('2026-04');
+new Chart(document.getElementById('monthly'),{type:'bar',data:{labels:data.mon_labels,datasets:[
+{label:'kWh',data:data.mon_kwh,backgroundColor:data.mon_labels.map((m,i)=>data.mon_n[i]<25?'#cbd5e1':(m>='2026-04'?colors.new:colors.blue))}]},
+options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw+' kWh'+(data.mon_n[c.dataIndex]<25?' (partial)':'')}}},
+scales:{y:{title:{display:true,text:'kWh'}}}}});
+</script></body></html>
